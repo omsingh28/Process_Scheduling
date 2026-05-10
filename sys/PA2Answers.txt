@@ -1,0 +1,52 @@
+Q1 
+Scheduler : Exponential distribution Scheduler 
+
+Advantages - The exponential scheduler reduces starvation by giving lower priority processes a chance by running a completely random exponential probability
+Even though it is probablistic, it still gives lower priority jobs less cpu time compared to higher priority jobs.
+It is also simpler to execute since there are less complexities compared to other schedulers. Here just the lambda needs to be tuned properly to get the desired values. 
+
+Disadvantages - The exponential scheduler may cause inconsistent performance for critical tasks since its selection is randomized. 
+If there is a higher priority job waitiing, lower priority job still might be given a chance since the order to pick up is based on probability. 
+It is not suitable for systems that require guranteed scheduling patterns.
+
+Scheduler : Linux like scheduler 
+
+Advantages - The Linux like scheduler adjusts based on the process behaviour which leads to a more fair pick. 
+It uses goodness(priority + remaining time) but still giving more weight to priority.
+The Epoch based system allows periodic rebalancing of the CPU time. It is more scalable and adaptable since it is a working replica of the linux based scheduler.
+
+Disadvantages - It is much more complex to implement since there are fine calculations which may disrupt the flow.
+It also has a higher overhead because whenever the epoch resets we have to recalculate the quantum. 
+It requires more memory to save the values such as the goodness score, counter, quantum. 
+
+Scheduler : Xinu(Round Robin) 
+
+Advantages - It is simpler and easy to implement since we do not need to recalculate the quantum as fixed quantum is used. 
+It also has a lower overhead since it requires minimal calculations. It works well when processes are of equal weightage. 
+Its behaviour is easy to track and verify. 
+
+Disadvantages - Stravation is very much possible for lower priority processes if higher priority keep entering ready queue.
+Fixed Quantum can be inefficient since some processes may require more time vs some shorter processes require less. 
+It has a poor performance for real time tasks since it does not consider process history and trends. 
+
+Q2
+Scheduler : Exponential distribution Scheduler 
+
+The scheduler first checks if the ready queue is empty or not by q[rdyhead].qnext == rdytail. Which proves that right after the head, tail is present.
+Only in this case the scheduler set the currpid to NULLPROC and assign the null process to run. If there are processes in the ready queue then it selects one
+on the basis of the exponential random number generated and never runs null when processes are present in the queue.
+
+Scheduler : Linux like scheduler 
+
+This scheduler maintains and updates processes on the basis of different metrics such as the quantum, goodness, counter. The scheduler goes over all the 
+processes to find out the process with the highest goodness score in the ready queue. If no process has a positive goodness score
+(goodness_maximum = 0 or goodness_pb == NULLPROC) which means all the processes either have 0 quantum or are not in the ready queue. This ensures that
+Null process only runs when no runnable process has any quantum remaining or none ready. When a epoch restarts quantum and goodness are recalculated,
+at that point any of the processes replace the null process and the cycle keeps going on. 
+
+Scheduler : Xinu(Round Robin) 
+
+The ready queue in Xinu is decided on the basis of the priority. The scheduler removes the highest priority in the ready queue using 
+currpid = getlast(rdytail). If and only if the ready queue is empty(q[rdyhead].qnext == rdytail) then the scheduler sets the currpid = NULLPROC.
+The null process thus only run when there are no user processes in the ready queue and as soon as an process becomes ready again the process is pushed
+to the ready queue and the null process is replaced. 
